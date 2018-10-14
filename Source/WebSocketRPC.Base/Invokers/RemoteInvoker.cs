@@ -46,7 +46,10 @@ namespace WebSocketRPC
             public RpcWaiter(TimeSpan delay)
             {
                 var delayMs = (int)delay.TotalMilliseconds;
-                if (delayMs <= 0) delayMs = -1;
+                if (delayMs <= 0)
+                {
+                    delayMs = -1;
+                }
 
                 completionSource = new TaskCompletionSource<Response>();
                 tokenSource = new CancellationTokenSource(delayMs);
@@ -73,7 +76,9 @@ namespace WebSocketRPC
             public void Dispose()
             {
                 if (tokenSource == null)
+                {
                     return;
+                }
 
                 tokenSource.Dispose();
                 tokenSource = null;
@@ -87,13 +92,17 @@ namespace WebSocketRPC
         static void verifyType()
         {
             if (!typeof(TInterface).IsInterface)
+            {
                 throw new Exception($"The specified type '{typeof(TInterface).Name}' must be an interface type.");
+            }
 
             var methodList = typeof(TInterface).GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
             var propertyList = typeof(TInterface).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             if (propertyList.Any())
+            {
                 throw new NotSupportedException($"The interface '{typeof(TInterface).Name}' must not declare any properties: { String.Join(", ", propertyList.Select(x => x.Name)) }.");
+            }
         }
 
         #endregion
@@ -105,7 +114,10 @@ namespace WebSocketRPC
         {
             RequestTerminationDelay = rpcTerminationDelay;
             runningMethods = new ConcurrentDictionary<string, RpcWaiter>();
-            if (verifiedTypes.Contains(typeof(TInterface))) return;
+            if (verifiedTypes.Contains(typeof(TInterface)))
+            {
+                return;
+            }
 
             //verify constraints
             verifyType();
@@ -125,7 +137,9 @@ namespace WebSocketRPC
             lock (runningMethods)
             {
                 if (runningMethods.ContainsKey(key))
+                {
                     runningMethods[key].SetResult(response);
+                }
             }
         }
 
@@ -151,7 +165,9 @@ namespace WebSocketRPC
             var response = await invokeAsync(funcName, argVals);
 
             if (response.Error != null)
+            {
                 throw new Exception($"Exception thrown while calling {funcName}. Message: {response.Error}.");
+            }
         }
 
         public async Task<TResult> InvokeAsync<TResult>(Expression<Func<TInterface, TResult>> functionExpression)
@@ -160,7 +176,9 @@ namespace WebSocketRPC
             var response = await invokeAsync(funcName, argVals);
 
             if (response.Error != null)
+            {
                 throw new Exception($"Exception thrown while calling {funcName}. Message: {response.Error}.");
+            }
 
             var result = response.ReturnValue.ToObject<TResult>(RPC.Serializer);
             return result;
@@ -172,7 +190,9 @@ namespace WebSocketRPC
             var response = await invokeAsync(funcName, argVals);
 
             if (response.Error != null)
+            {
                 throw new Exception($"Exception thrown while calling {funcName}. Message: {response.Error}.");
+            }
         }
 
         public async Task<TResult> InvokeAsync<TResult>(Expression<Func<TInterface, Task<TResult>>> functionExpression)
@@ -181,7 +201,9 @@ namespace WebSocketRPC
             var response = await invokeAsync(funcName, argVals);
 
             if (response.Error != null)
+            {
                 throw new Exception($"Exception thrown while calling {funcName}. Message: {response.Error}.");
+            }
 
             var result = response.ReturnValue.ToObject<TResult>(RPC.Serializer);
             return result;
@@ -190,7 +212,9 @@ namespace WebSocketRPC
         async Task<Response> invokeAsync(string name, params object[] args)
         {
             if (sendAsync == null)
+            {
                 throw new Exception("The invoker is not initialized.");
+            }
 
             var msg = new Request
             {
@@ -224,7 +248,9 @@ namespace WebSocketRPC
         {
             var call = expression.Body as MethodCallExpression;
             if (call == null)
+            {
                 throw new ArgumentException("Not a method call: " + expression.Name);
+            }
 
             var values = new List<object>();
             foreach (var argument in call.Arguments)

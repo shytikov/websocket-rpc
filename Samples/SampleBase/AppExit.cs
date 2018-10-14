@@ -9,10 +9,14 @@ namespace SampleBase
         public static void WaitFor(CancellationTokenSource cts, params Task[] tasks)
         {
             if (cts == null)
+            {
                 throw new ArgumentNullException(nameof(cts));
+            }
 
             if (tasks == null)
+            {
                 throw new ArgumentNullException(nameof(tasks));
+            }
 
             Task.Run(() =>
             {
@@ -36,7 +40,9 @@ namespace SampleBase
             try
             {
                 foreach (var t in tasks) //enables exception handling
+                {
                     t.Wait();
+                }
             }
             catch (Exception ex)
             {
@@ -47,10 +53,14 @@ namespace SampleBase
         static void writeError(Exception ex)
         {
             if (ex == null)
+            {
                 return;
+            }
 
             if (ex is AggregateException)
+            {
                 ex = ex.InnerException;
+            }
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Error: " + ex.Message);

@@ -92,7 +92,9 @@ namespace WebSocketRPC
         public static ILocalBinder<TObj> Bind<TObj>(this Connection connection, TObj obj)
         { 
             if (AllBinders.ToArray().OfType<ILocalBinder<TObj>>().Any(x => x.Connection == connection))
+            {
                 throw new NotSupportedException("Only one local binder is permitted.");
+            }
 
             return new LocalBinder<TObj>(connection, obj);
         }
@@ -106,7 +108,9 @@ namespace WebSocketRPC
         public static IRemoteBinder<TInterface> Bind<TInterface>(this Connection connection)
         {
             if (AllBinders.ToArray().OfType<IRemoteBinder<TInterface>>().Any(x => x.Connection == connection))
+            {
                 throw new NotSupportedException("Only one remote binder is permitted.");
+            }
 
             return new RemoteBinder<TInterface>(connection, RpcTerminationDelay);
         }
@@ -166,7 +170,10 @@ namespace WebSocketRPC
                                             var xType = x.GetType();
 
                                             var isLocalBinder = lBinderType.IsAssignableFrom(xType);
-                                            if (!isLocalBinder) return false;
+                                            if (!isLocalBinder)
+                                            {
+                                                return false;
+                                            }
 
                                             var isObjBinder = xType.GetProperty(nameof(ILocalBinder<object>.Object)).GetValue(x, null) == obj;
                                             return isObjBinder;

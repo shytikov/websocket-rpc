@@ -42,7 +42,9 @@ namespace RawMsgJs
                     await c.SendAsync("Server received: " + msg);
 
                     if (msg.ToLower() == "close")
+                    {
                         await c.CloseAsync(statusDescription: "Close requested by user.");
+                    }
                 };
             });
 

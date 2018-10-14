@@ -59,7 +59,9 @@ namespace WebSocketRPC
 
             //---verify JSON
             if (r.FunctionName == null || r.Arguments == null)
+            {
                 return default(Request);
+            }
 
             //---return it if all is OK
             return r;
@@ -104,7 +106,9 @@ namespace WebSocketRPC
 
             //---verify JSON
             if (r.FunctionName == null || r.ReturnValue == null)
+            {
                 return default(Response);
+            }
 
             //---return it if all is OK
             return r;

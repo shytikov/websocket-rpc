@@ -15,7 +15,9 @@ namespace Tests
             var tasks = testFunc(cts);
 
             foreach (var t in tasks)
+            {
                 t.ContinueWith(_ => cts.Cancel(), TaskContinuationOptions.NotOnRanToCompletion);
+            }
 
             Task.Run(() => 
             {

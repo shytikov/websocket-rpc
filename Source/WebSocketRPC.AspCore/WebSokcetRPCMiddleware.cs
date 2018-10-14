@@ -60,7 +60,9 @@ namespace WebSocketRPC
             foreach (var k in cookieCollection.Keys)
             {
                 if (cc.ContainsKey(k))
+                {
                     continue; //take only the first one 
+                }
 
                 cc.Add(k, cookieCollection[k]);
             }

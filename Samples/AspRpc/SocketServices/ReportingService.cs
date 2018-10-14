@@ -30,7 +30,9 @@ namespace AspRpc
         public async Task Start()
         {
             if (reportTask != null)
+            {
                 throw new NotSupportedException("The service is running. Please stop it first.");
+            }
 
             await RPC.For<IClientUpdate>().CallAsync(x => x.OnStart());
             cts = new CancellationTokenSource();
@@ -65,7 +67,9 @@ namespace AspRpc
         public async Task Stop()
         {
             if (cts == null)
+            {
                 throw new NotSupportedException("The service is stopped. Please start it first.");
+            }
 
             cts?.Cancel();
             await reportTask;

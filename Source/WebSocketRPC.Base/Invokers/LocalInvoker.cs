@@ -67,11 +67,15 @@ namespace WebSocketRPC
                                                   .Select(x => x.Key);
 
             if (overloadedMethodNames.Any())
+            {
                 throw new NotSupportedException("Overloaded functions are not supported: " + String.Join(", ", overloadedMethodNames));
+            }
 
             var propertyList = typeof(TObj).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             if (propertyList.Any())
+            {
                 throw new NotSupportedException("Properties are not permitted: " + String.Join(", ", propertyList.Select(x => x.Name)) + ".");
+            }
         }
 
         public bool CanInvoke(Request clientMessage)
@@ -81,11 +85,15 @@ namespace WebSocketRPC
             functionName = name;
 
             if (!interfaceMatches(iface) || !methods.ContainsKey(functionName))
+            {
                 return false;
+            }
 
             var methodParams = methods[functionName].GetParameters();
             if (methodParams.Length != clientMessage.Arguments.Length)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -93,16 +101,23 @@ namespace WebSocketRPC
         private bool interfaceMatches(string interfaceName)
         {
             if (interfaceName == null)
+            {
                 return true;
+            }
 
             if (typeof(TObj).GetInterfaces().Where(t => t.FullName == interfaceName).Any())
+            {
                 return true;
+            }
 
             Type type = typeof(TObj);
             while (type != null)
             {
                 if (type.FullName == interfaceName)
+                {
                     return true;
+                }
+
                 type = type.BaseType;
             }
 
@@ -120,7 +135,11 @@ namespace WebSocketRPC
             }
             catch (Exception ex)
             {
-                while (ex.InnerException != null) ex = ex.InnerException;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
+
                 error = ex;
             }
 
@@ -139,16 +158,21 @@ namespace WebSocketRPC
             functionName = name;
 
             if (!interfaceMatches(iface) || !methods.ContainsKey(functionName))
+            {
                 throw new ArgumentException(functionName + ": The object does not contain the provided method name: " + functionName + ".");
+            }
 
             var methodParams = methods[functionName].GetParameters();
             if (methodParams.Length != args.Length)
+            {
                 throw new ArgumentException(functionName + ": The number of provided parameters mismatches the number of required arguments.");
+            }
 
             var argObjs = new object[args.Length];
             for (int i = 0; i < methodParams.Length; i++)
+            {
                 argObjs[i] = args[i].ToObject(methodParams[i].ParameterType, RPC.Serializer);
-
+            }
 
             var hasResult = methods[functionName].ReturnType != typeof(void) &&
                             methods[functionName].ReturnType != typeof(Task);
@@ -172,7 +196,9 @@ namespace WebSocketRPC
         {
             int index = functionName.LastIndexOf('.');
             if (index == -1)
+            {
                 return (null, functionName);
+            }
 
             var iface = functionName.Substring(0, index);
             var name = functionName.Substring(index + 1, functionName.Length - index - 1);

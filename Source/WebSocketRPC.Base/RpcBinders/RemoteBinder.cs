@@ -42,7 +42,10 @@ namespace WebSocketRPC
             Connection.OnReceive += async d =>
             {
                 var msg = Response.FromJson(d);
-                if (msg.IsEmpty) return;
+                if (msg.IsEmpty)
+                {
+                    return;
+                }
 
                 rInvoker.Receive(msg);
                 await Task.FromResult(0);

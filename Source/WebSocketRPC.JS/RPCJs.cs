@@ -50,7 +50,11 @@ namespace WebSocketRPC
             tName = settings.NameOverwrite ?? tName;
 
             var sb = new StringBuilder();
-            if (settings.WithRequireSupport) sb.Append(JsCallerGenerator.GenerateRequireJsHeader(tName));
+            if (settings.WithRequireSupport)
+            {
+                sb.Append(JsCallerGenerator.GenerateRequireJsHeader(tName));
+            }
+
             sb.Append(JsCallerGenerator.GenerateHeader(tName));
 
             foreach (var m in mInfos)
@@ -81,7 +85,11 @@ namespace WebSocketRPC
             var xmlMemberNodes = JsDocGenerator.GetMemberNodes(xmlDocPath);
 
             var sb = new StringBuilder();
-            if (settings.WithRequireSupport) sb.Append(JsCallerGenerator.GenerateRequireJsHeader(tName));
+            if (settings.WithRequireSupport)
+            {
+                sb.Append(JsCallerGenerator.GenerateRequireJsHeader(tName));
+            }
+
             sb.Append(JsDocGenerator.GetClassDoc(xmlMemberNodes, tName));
             sb.Append(JsCallerGenerator.GenerateHeader(tName));
 
@@ -114,9 +122,13 @@ namespace WebSocketRPC
             var xmlDocPath = Path.ChangeExtension(assembly.Location, ".xml");
 
             if (!File.Exists(xmlDocPath))
+            {
                 return GenerateCaller(settings);
+            }
             else
+            {
                 return GenerateCallerWithDoc(xmlDocPath, settings);
+            }
         }
     }
 }

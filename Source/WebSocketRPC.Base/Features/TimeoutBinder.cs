@@ -23,7 +23,9 @@ namespace WebSocketRPC
         public TimeoutBinder(Connection connection, TimeSpan timeout, string closeMessage)
         {
             if (timeout.TotalMilliseconds <= 0)
+            {
                 throw new ArgumentException(nameof(timeout), "The value must be strictly positive.");
+            }
 
             this.connection = connection;
             this.closeMessage = closeMessage;
@@ -66,10 +68,18 @@ namespace WebSocketRPC
         {
             var binder = new TimeoutBinder(connection, timeout, closeMessage);
 
-            lock (timeoutBinders) timeoutBinders.Add(binder);
+            lock (timeoutBinders)
+            {
+                timeoutBinders.Add(binder);
+            }
+
             connection.OnClose += (s, d) => 
             {
-                lock (timeoutBinders) timeoutBinders.Remove(binder);
+                lock (timeoutBinders)
+                {
+                    timeoutBinders.Remove(binder);
+                }
+
                 return Task.FromResult(true);
             };
         }

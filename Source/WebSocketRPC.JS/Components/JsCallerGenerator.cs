@@ -43,7 +43,9 @@ namespace WebSocketRPC
             {
                 var mInfo = (oM.Body as MethodCallExpression)?.Method;
                 if (mInfo == null)
+                {
                     continue;
+                }
 
                 omittedMethodNames.Add(mInfo.Name);
             }
@@ -57,8 +59,9 @@ namespace WebSocketRPC
                                                   .Select(x => x.Key);
 
             if (overloadedMethodNames.Any())
+            {
                 throw new NotSupportedException("Overloaded functions are not supported: " + String.Join(", ", overloadedMethodNames));
-
+            }
 
             methodList = methodList.Where(x => !omittedMethodNames.Contains(x.Name))
                                    .ToArray();
@@ -101,7 +104,9 @@ namespace WebSocketRPC
             {
                 string l = null;
                 while ((l = reader.ReadLine()) != null)
+                {
                     lines.Add(l);
+                }
             }
 
             var apiBase = String.Join(Environment.NewLine, lines.Select(x => "\t" + x));

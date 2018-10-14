@@ -64,15 +64,22 @@ namespace WebSocketRPC
                 catch(Exception)
                 {
                     isClosedSuccessfully = false;
-                    if (!reconnectOnError && !reconnectOnClose) throw;
+                    if (!reconnectOnError && !reconnectOnClose)
+                    {
+                        throw;
+                    }
                 }
 
                 if (token.IsCancellationRequested)
+                {
                     break;
+                }
 
                 shouldReconnect = (!isClosedSuccessfully && reconnectOnError) || reconnectOnClose;
                 if (shouldReconnect)
+                {
                     await Task.Delay(TimeSpan.FromSeconds(secondsBetweenReconnect));
+                }
             }
             while (shouldReconnect);
         }

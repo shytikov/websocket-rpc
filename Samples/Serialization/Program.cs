@@ -53,7 +53,9 @@ namespace Serialization
         public Bgr<byte>[,] SwapImageChannels(Uri imgUrl, int[] order)
         {
             if (order.Any(x => x < 0 || x > CHANNEL_COUNT - 1))
+            {
                 throw new ArgumentException(String.Format("Each element of the channel order must be in: [{0}..{1}] range.", 0, CHANNEL_COUNT - 1));
+            }
 
             Bgr<byte>[,] image = null;
             try { image = imgUrl.GetBytes().DecodeAsColorImage(); }

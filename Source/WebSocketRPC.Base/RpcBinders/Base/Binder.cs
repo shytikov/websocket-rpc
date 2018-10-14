@@ -36,13 +36,20 @@ namespace WebSocketRPC
         protected Binder(Connection connection)
         {
             Connection = connection;
-            lock(RPC.AllBinders) RPC.AllBinders.Add(this);
+            lock(RPC.AllBinders)
+            {
+                RPC.AllBinders.Add(this);
+            }
 
             Connection.OnClose += (s, d) =>
             {
                 Debug.WriteLine("Close");
 
-                lock (RPC.AllBinders) RPC.AllBinders.Remove(this);
+                lock (RPC.AllBinders)
+                {
+                    RPC.AllBinders.Remove(this);
+                }
+
                 return Task.FromResult(true);
             };
 
@@ -50,7 +57,11 @@ namespace WebSocketRPC
             {
                 Debug.WriteLine("Error");
 
-                lock (RPC.AllBinders) RPC.AllBinders.Remove(this);
+                lock (RPC.AllBinders)
+                {
+                    RPC.AllBinders.Remove(this);
+                }
+
                 return Task.FromResult(true);
             };
         }

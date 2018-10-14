@@ -51,7 +51,9 @@ namespace WebSocketRPC
             set
             {
                 if (value <= 0)
+                {
                     throw new ArgumentOutOfRangeException("The message size must be set to a strictly positive value.");
+                }
 
                 maxMessageSize = value;
             }
@@ -67,7 +69,9 @@ namespace WebSocketRPC
             set
             {
                 if (encoding == null)
+                {
                     throw new ArgumentException("The provided value must not be null.");
+                }
 
                 encoding = value;
             }
@@ -134,7 +138,9 @@ namespace WebSocketRPC
         internal void InvokeOnError(Exception exception)
         {
             if (OnError == null || exception == null)
+            {
                 return;
+            }
 
             try
             {
@@ -150,7 +156,9 @@ namespace WebSocketRPC
         private void invokeOnOpen()
         {
             if (OnOpen == null)
+            {
                 return;
+            }
 
             try
             {
@@ -167,7 +175,9 @@ namespace WebSocketRPC
         private void invokeOnReceive(string msg)
         {
             if (OnReceive == null)
+            {
                 return;
+            }
 
             try
             {
@@ -189,7 +199,9 @@ namespace WebSocketRPC
         private void invokeOnClose(WebSocketCloseStatus closeStatus, string statusDescription)
         {
             if (OnClose == null)
+            {
                 return;
+            }
 
             try
             {
@@ -216,10 +228,14 @@ namespace WebSocketRPC
         public async Task<bool> SendAsync(string data)
         {
             if (data == null)
+            {
                 throw new ArgumentNullException(nameof(data), "The provided tet must not be null.");
+            }
 
             if (socket.State != WebSocketState.Open)
+            {
                 return false;
+            }
 
             var bData = Encoding.GetBytes(data);
             if (bData.Length >= MaxMessageSize)
@@ -238,7 +254,9 @@ namespace WebSocketRPC
         async Task sendAsync(ArraySegment<byte> data, WebSocketMessageType msgType)
         {
             if (socket.State != WebSocketState.Open)
+            {
                 return;
+            }
 
             try
             {
@@ -247,7 +265,9 @@ namespace WebSocketRPC
             catch (Exception ex)
             {
                 if (socket.State != WebSocketState.Open)
+                {
                     await CloseAsync(WebSocketCloseStatus.InternalServerError, ex.Message);
+                }
             }
         }
 
@@ -264,12 +284,16 @@ namespace WebSocketRPC
         public async Task CloseAsync(WebSocketCloseStatus closeStatus = WebSocketCloseStatus.NormalClosure, string statusDescription = "")
         {
             if (statusDescription == null)
+            {
                 throw new ArgumentNullException(nameof(statusDescription), "The value may be empty but not null.");
-           
+            }
+
             try
             {
                 if (socket.State == WebSocketState.Open || socket.State == WebSocketState.CloseReceived)
+                {
                     await socket.CloseOutputAsync(closeStatus, statusDescription, CancellationToken.None);
+                }
             }
             catch(Exception ex)
             {
@@ -361,7 +385,9 @@ namespace WebSocketRPC
 
                 //check if cancellation is requested
                 if (token.IsCancellationRequested)
+                {
                     break;
+                }
             }
         }
 
@@ -373,7 +399,9 @@ namespace WebSocketRPC
                 invokeOnReceive(msg);
                 Request request = Request.FromJson(msg);
                 if (request.IsEmpty)
+                {
                     return;
+                }
 
                 var binder = localBinders.Where(b => b.CanProcessRequest(request)).FirstOrDefault();
                 Response response = new Response();

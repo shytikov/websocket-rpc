@@ -52,7 +52,9 @@ namespace WebSocketRPC
         public static async Task ListenAsync(int port, CancellationToken token, Action<Connection, WebSocketContext> onConnect, bool useHttps = false)
         {
             if (port < 0 || port > UInt16.MaxValue)
+            {
                 throw new NotSupportedException($"The provided port value must in the range: [0..{UInt16.MaxValue}");
+            }
 
             var s = useHttps ? "s" : String.Empty;
             await ListenAsync($"http{s}://+:{port}/", token, onConnect);
@@ -71,7 +73,9 @@ namespace WebSocketRPC
         public static async Task ListenAsync(int port, CancellationToken token, Action<Connection, WebSocketContext> onConnect, Func<HttpListenerRequest, HttpListenerResponse, Task> onHttpRequestAsync, bool useHttps = false, byte maxHttpConnectionCount = 32)
         {
             if (port < 0 || port > UInt16.MaxValue)
+            {
                 throw new NotSupportedException($"The provided port value must in the range: [0..{UInt16.MaxValue}");
+            }
 
             var s = useHttps ? "s" : String.Empty;
             await ListenAsync($"http{s}://+:{port}/", token, onConnect, onHttpRequestAsync, maxHttpConnectionCount);
@@ -109,16 +113,24 @@ namespace WebSocketRPC
         {
             //--------------------- checks args
             if (token == null)
+            {
                 throw new ArgumentNullException(nameof(token), "The provided token must not be null.");
+            }
 
             if (onConnect == null)
+            {
                 throw new ArgumentNullException(nameof(onConnect), "The provided connection action must not be null.");
+            }
 
             if (onHttpRequestAsync == null)
+            {
                 throw new ArgumentNullException(nameof(onHttpRequestAsync), "The provided HTTP request/response action must not be null.");
+            }
 
             if (maxHttpConnectionCount < 1)
+            {
                 throw new ArgumentException(nameof(maxHttpConnectionCount), "The value must be greater or equal than 1.");
+            }
 
 
             //--------------------- start listener
@@ -161,12 +173,16 @@ namespace WebSocketRPC
                     catch (Exception)
                     {
                         if (!token.IsCancellationRequested)
+                        {
                             throw;
+                        }
                     }
                     finally
                     {
                         if (token.IsCancellationRequested)
+                        {
                             shouldStop = true;
+                        }
                     }
                 }
             }
@@ -182,7 +198,10 @@ namespace WebSocketRPC
             if (m.Success)
             {
                 var protocol = m.Groups["protocol"].Value;
-                var port = m.Groups["port"].Value; if (String.IsNullOrEmpty(port)) port = 80.ToString();
+                var port = m.Groups["port"].Value; if (String.IsNullOrEmpty(port))
+                {
+                    port = 80.ToString();
+                }
 
                 msg = $"The HTTP server can not be started, as the namespace reservation already exists.\n" +
                       $"Please run (elevated): 'netsh http delete urlacl url={protocol}://+:{port}/'.";
@@ -201,7 +220,9 @@ namespace WebSocketRPC
             var wsCloseTasks = new Task[connections.Count];
 
             for (int i = 0; i < connections.Count; i++)
+            {
                 wsCloseTasks[i] = connections[i].CloseAsync();
+            }
 
             Task.WaitAll(wsCloseTasks.Where(t => t != null).ToArray()); //tasks will be null if 'CloseAsync' fails
             listener.Stop();
@@ -218,7 +239,9 @@ namespace WebSocketRPC
         static async Task handleSocketAsync(HttpListenerContext ctx, CancellationToken token, Action<Connection, WebSocketContext> onConnect)
         {
             if (!ctx.Request.IsWebSocketRequest)
+            {
                 return;
+            }
 
             WebSocketContext wsCtx = null;
             WebSocket webSocket = null;
@@ -237,7 +260,11 @@ namespace WebSocketRPC
             var connection = new Connection(webSocket, CookieUtils.GetCookies(wsCtx.CookieCollection));
             try
             {
-                lock (connections) connections.Add(connection);
+                lock (connections)
+                {
+                    connections.Add(connection);
+                }
+
                 onConnect(connection, wsCtx);
                 await connection.ListenReceiveAsync(token);
             }
@@ -248,7 +275,10 @@ namespace WebSocketRPC
             finally
             {
                 webSocket?.Dispose();
-                lock (connections) connections.Remove(connection);
+                lock (connections)
+                {
+                    connections.Remove(connection);
+                }
             }
         }
     }

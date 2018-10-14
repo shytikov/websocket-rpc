@@ -38,14 +38,18 @@ namespace WebSocketRPC
         public static XmlNodeList GetMemberNodes(string xmlDocPath)
         {
             if (!File.Exists(xmlDocPath))
+            {
                 throw new FileNotFoundException("The provided xml-doc path points to a non-existent file.");
+            }
 
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(xmlDocPath);
 
             var mElems = xmlDoc.GetElementsByTagName("members");
             if (mElems.Count != 1)
+            {
                 return mElems; //as I can not construct empty list
+            }
 
             return mElems[0].ChildNodes;
         }
@@ -57,14 +61,18 @@ namespace WebSocketRPC
             {
                 var n = members[eIdx];
                 if (n.Name != "member" || (bool)n.Attributes["name"]?.Value?.Contains(className) == false)
+                {
                     continue;
+                }
 
                 s = n.InnerText.Trim('\r', '\n', ' ');
                 break;
             }
 
             if (s == null)
+            {
                 return String.Empty;
+            }
 
             var jsDoc = new StringBuilder();
             jsDoc.AppendLine("/**");
@@ -79,7 +87,10 @@ namespace WebSocketRPC
                                           IList<string> pNames, IList<Type> pTypes, Type returnType, string linePrefix = "\t")
         {
             var mElem = getMethod(mmebers, methodName);
-            if (mElem == null) return String.Empty;
+            if (mElem == null)
+            {
+                return String.Empty;
+            }
 
             var s = getSummary(mElem);
             var p = getParams(mElem);
@@ -94,7 +105,9 @@ namespace WebSocketRPC
                 for (int i = 0; i < pNames.Count; i++)
                 {
                     if (!p.ContainsKey(pNames[i]))
+                    {
                         continue;
+                    }
 
                     jsDoc.AppendLine(String.Format("{0} * @param {{{1}}} - {2}", linePrefix, pTypes[i].Name, p[pNames[i]]));
                 }
@@ -112,7 +125,9 @@ namespace WebSocketRPC
             {
                 var n = nodes[eIdx];
                 if (n.Name != "member" || (bool)n.Attributes["name"]?.Value?.Contains(mName) == false)
+                {
                     continue;
+                }
 
                 return n;
             }
@@ -128,7 +143,9 @@ namespace WebSocketRPC
             {
                 var n = node.ChildNodes[eIdx];
                 if (n.Name != "summary")
+                {
                     continue;
+                }
 
                 s = n.InnerText.Trim('\r', '\n', ' ');
                 break;
@@ -146,7 +163,9 @@ namespace WebSocketRPC
                 var n = node.ChildNodes[eIdx];
 
                 if (n.Name != "param")
+                {
                     continue;
+                }
 
                 var pName = n.Attributes["name"]?.Value;
                 var pDesc = n.InnerText;
@@ -165,7 +184,9 @@ namespace WebSocketRPC
             {
                 var n = node.ChildNodes[eIdx];
                 if (n.Name != "returns")
+                {
                     continue;
+                }
 
                 s = n.InnerText.Trim('\r', '\n', ' ');
                 break;
@@ -177,7 +198,9 @@ namespace WebSocketRPC
         static string getTypeName(Type type)
         {
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(Task<>))
+            {
                 return type.Name;
+            }
 
             return type.GenericTypeArguments.First().Name + " (Task)";
         }
