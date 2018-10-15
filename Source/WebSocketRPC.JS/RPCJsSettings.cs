@@ -54,7 +54,7 @@ namespace WebSocketRPC
         }
 
         /// <summary>
-        /// If true the 'require.js' header will be present in the generated files.
+        /// Gets or sets JS module format of the generated files.
         /// </summary>
         public Module Format
         {
