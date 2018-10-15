@@ -57,7 +57,7 @@ namespace WebSocketRPC
         public static string GetClassDoc(XmlNodeList members, string className)
         {
             string s = null;
-            for (int eIdx = 0; eIdx < members.Count; eIdx++)
+            for (var eIdx = 0; eIdx < members.Count; eIdx++)
             {
                 var n = members[eIdx];
                 if (n.Name != "member" || (bool)n.Attributes["name"]?.Value?.Contains(className) == false)
@@ -71,12 +71,12 @@ namespace WebSocketRPC
 
             if (s == null)
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var jsDoc = new StringBuilder();
             jsDoc.AppendLine("/**");
-            jsDoc.AppendLine(String.Format(" * {0}", s));
+            jsDoc.AppendLine(string.Format(" * {0}", s));
             jsDoc.AppendLine(" * @constructor");
             jsDoc.AppendLine("*/");
 
@@ -89,7 +89,7 @@ namespace WebSocketRPC
             var mElem = getMethod(mmebers, methodName);
             if (mElem == null)
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var s = getSummary(mElem);
@@ -97,31 +97,31 @@ namespace WebSocketRPC
             var r = getReturn(mElem);
 
             var jsDoc = new StringBuilder();
-            jsDoc.AppendLine(String.Format("{0}/**", linePrefix));
+            jsDoc.AppendLine(string.Format("{0}/**", linePrefix));
             {
-                jsDoc.AppendLine(String.Format("{0} * @description - {1}", linePrefix, s));
-                jsDoc.AppendLine(String.Format("{0} *", linePrefix));
+                jsDoc.AppendLine(string.Format("{0} * @description - {1}", linePrefix, s));
+                jsDoc.AppendLine(string.Format("{0} *", linePrefix));
 
-                for (int i = 0; i < pNames.Count; i++)
+                for (var i = 0; i < pNames.Count; i++)
                 {
                     if (!p.ContainsKey(pNames[i]))
                     {
                         continue;
                     }
 
-                    jsDoc.AppendLine(String.Format("{0} * @param {{{1}}} - {2}", linePrefix, pTypes[i].Name, p[pNames[i]]));
+                    jsDoc.AppendLine(string.Format("{0} * @param {{{1}}} - {2}", linePrefix, pTypes[i].Name, p[pNames[i]]));
                 }
 
-                jsDoc.AppendLine(String.Format("{0} * @returns {{{1}}} - {2}", linePrefix, getTypeName(returnType), r));
+                jsDoc.AppendLine(string.Format("{0} * @returns {{{1}}} - {2}", linePrefix, getTypeName(returnType), r));
             }
-            jsDoc.AppendLine(String.Format("{0}*/", linePrefix));
+            jsDoc.AppendLine(string.Format("{0}*/", linePrefix));
 
             return jsDoc.ToString();
         }
 
         static XmlNode getMethod(XmlNodeList nodes, string mName)
         {
-            for (int eIdx = 0; eIdx < nodes.Count; eIdx++)
+            for (var eIdx = 0; eIdx < nodes.Count; eIdx++)
             {
                 var n = nodes[eIdx];
                 if (n.Name != "member" || (bool)n.Attributes["name"]?.Value?.Contains(mName) == false)
@@ -137,9 +137,9 @@ namespace WebSocketRPC
 
         static string getSummary(XmlNode node)
         {
-            string s = String.Empty;
+            var s = string.Empty;
 
-            for (int eIdx = 0; eIdx < node.ChildNodes.Count; eIdx++)
+            for (var eIdx = 0; eIdx < node.ChildNodes.Count; eIdx++)
             {
                 var n = node.ChildNodes[eIdx];
                 if (n.Name != "summary")
@@ -158,7 +158,7 @@ namespace WebSocketRPC
         {
             var pInfos = new Dictionary<string, string>();
 
-            for (int eIdx = 0; eIdx < node.ChildNodes.Count; eIdx++)
+            for (var eIdx = 0; eIdx < node.ChildNodes.Count; eIdx++)
             {
                 var n = node.ChildNodes[eIdx];
 
@@ -178,9 +178,9 @@ namespace WebSocketRPC
 
         static string getReturn(XmlNode node)
         {
-            string s = String.Empty;
+            var s = string.Empty;
 
-            for (int eIdx = 0; eIdx < node.ChildNodes.Count; eIdx++)
+            for (var eIdx = 0; eIdx < node.ChildNodes.Count; eIdx++)
             {
                 var n = node.ChildNodes[eIdx];
                 if (n.Name != "returns")

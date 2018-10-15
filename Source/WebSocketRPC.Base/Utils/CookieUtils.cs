@@ -14,7 +14,7 @@ namespace WebSocketRPC
 
             var cc = new Dictionary<string, string>();
 
-            for (int i = 0; i < cookieCollection.Count; i++)
+            for (var i = 0; i < cookieCollection.Count; i++)
             {
                 var k = cookieCollection[i].Name;
                 if (cc.ContainsKey(k))

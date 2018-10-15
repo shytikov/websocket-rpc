@@ -18,8 +18,8 @@ namespace Tests
             });
             tasks.Add(ts);
 
-            int id = 0;
-            for (int i = 0; i < 10; i++)
+            var id = 0;
+            for (var i = 0; i < 10; i++)
             {
                 var tc = Client.ConnectAsync($"ws://{address}", cts.Token, c =>
                 {
@@ -27,7 +27,7 @@ namespace Tests
 
                     c.OnOpen += async () =>
                     {
-                        int n = 10;
+                        var n = 10;
                         while (n > 0)
                         {
                             await c.SendAsync("Hello from: " + id);

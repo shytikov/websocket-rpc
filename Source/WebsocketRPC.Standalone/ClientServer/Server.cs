@@ -51,12 +51,12 @@ namespace WebSocketRPC
         /// <returns>Server listening task.</returns>
         public static async Task ListenAsync(int port, CancellationToken token, Action<Connection, WebSocketContext> onConnect, bool useHttps = false)
         {
-            if (port < 0 || port > UInt16.MaxValue)
+            if (port < 0 || port > ushort.MaxValue)
             {
-                throw new NotSupportedException($"The provided port value must in the range: [0..{UInt16.MaxValue}");
+                throw new NotSupportedException($"The provided port value must in the range: [0..{ushort.MaxValue}");
             }
 
-            var s = useHttps ? "s" : String.Empty;
+            var s = useHttps ? "s" : string.Empty;
             await ListenAsync($"http{s}://+:{port}/", token, onConnect);
         }
 
@@ -72,12 +72,12 @@ namespace WebSocketRPC
         /// <returns>Server listening task.</returns>
         public static async Task ListenAsync(int port, CancellationToken token, Action<Connection, WebSocketContext> onConnect, Func<HttpListenerRequest, HttpListenerResponse, Task> onHttpRequestAsync, bool useHttps = false, byte maxHttpConnectionCount = 32)
         {
-            if (port < 0 || port > UInt16.MaxValue)
+            if (port < 0 || port > ushort.MaxValue)
             {
-                throw new NotSupportedException($"The provided port value must in the range: [0..{UInt16.MaxValue}");
+                throw new NotSupportedException($"The provided port value must in the range: [0..{ushort.MaxValue}");
             }
 
-            var s = useHttps ? "s" : String.Empty;
+            var s = useHttps ? "s" : string.Empty;
             await ListenAsync($"http{s}://+:{port}/", token, onConnect, onHttpRequestAsync, maxHttpConnectionCount);
         }
 
@@ -150,7 +150,7 @@ namespace WebSocketRPC
             using (var s = new SemaphoreSlim(maxHttpConnectionCount))
             using (var r = token.Register(() => closeListener(listener)))
             {
-                bool shouldStop = false;
+                var shouldStop = false;
                 while (!shouldStop)
                 {
                     try
@@ -198,7 +198,7 @@ namespace WebSocketRPC
             if (m.Success)
             {
                 var protocol = m.Groups["protocol"].Value;
-                var port = m.Groups["port"].Value; if (String.IsNullOrEmpty(port))
+                var port = m.Groups["port"].Value; if (string.IsNullOrEmpty(port))
                 {
                     port = 80.ToString();
                 }
@@ -219,7 +219,7 @@ namespace WebSocketRPC
         {
             var wsCloseTasks = new Task[connections.Count];
 
-            for (int i = 0; i < connections.Count; i++)
+            for (var i = 0; i < connections.Count; i++)
             {
                 wsCloseTasks[i] = connections[i].CloseAsync();
             }

@@ -101,7 +101,7 @@ namespace WebSocketRPC
             var propertyList = typeof(TInterface).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             if (propertyList.Any())
             {
-                throw new NotSupportedException($"The interface '{typeof(TInterface).Name}' must not declare any properties: { String.Join(", ", propertyList.Select(x => x.Name)) }.");
+                throw new NotSupportedException($"The interface '{typeof(TInterface).Name}' must not declare any properties: { string.Join(", ", propertyList.Select(x => x.Name)) }.");
             }
         }
 
@@ -227,7 +227,7 @@ namespace WebSocketRPC
             runningMethods[key] = new RpcWaiter(RequestTerminationDelay);
             await sendAsync(msg);
 
-            Response response = default(Response);
+            var response = default(Response);
             try
             {
                 await runningMethods[key].Task;
@@ -237,7 +237,7 @@ namespace WebSocketRPC
             finally
             {
                 runningMethods[key].Dispose();
-                runningMethods.TryRemove(key, out RpcWaiter _);
+                runningMethods.TryRemove(key, out var _);
             }
 
             return response;

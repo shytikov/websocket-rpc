@@ -40,7 +40,7 @@ namespace WebSocketRPC
 
         static LocalInvoker()
         {
-            List<MethodInfo> methodList = new List<MethodInfo>();
+            var methodList = new List<MethodInfo>();
             methodList.AddRange(typeof(TObj).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy));
             if (typeof(TObj).IsInterface)
             {                
@@ -68,13 +68,13 @@ namespace WebSocketRPC
 
             if (overloadedMethodNames.Any())
             {
-                throw new NotSupportedException("Overloaded functions are not supported: " + String.Join(", ", overloadedMethodNames));
+                throw new NotSupportedException("Overloaded functions are not supported: " + string.Join(", ", overloadedMethodNames));
             }
 
             var propertyList = typeof(TObj).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             if (propertyList.Any())
             {
-                throw new NotSupportedException("Properties are not permitted: " + String.Join(", ", propertyList.Select(x => x.Name)) + ".");
+                throw new NotSupportedException("Properties are not permitted: " + string.Join(", ", propertyList.Select(x => x.Name)) + ".");
             }
         }
 
@@ -110,7 +110,7 @@ namespace WebSocketRPC
                 return true;
             }
 
-            Type type = typeof(TObj);
+            var type = typeof(TObj);
             while (type != null)
             {
                 if (type.FullName == interfaceName)
@@ -169,7 +169,7 @@ namespace WebSocketRPC
             }
 
             var argObjs = new object[args.Length];
-            for (int i = 0; i < methodParams.Length; i++)
+            for (var i = 0; i < methodParams.Length; i++)
             {
                 argObjs[i] = args[i].ToObject(methodParams[i].ParameterType, RPC.Serializer);
             }
@@ -194,7 +194,7 @@ namespace WebSocketRPC
 
         private (string iface, string name) parseFunctionName(string functionName)
         {
-            int index = functionName.LastIndexOf('.');
+            var index = functionName.LastIndexOf('.');
             if (index == -1)
             {
                 return (null, functionName);
@@ -207,10 +207,10 @@ namespace WebSocketRPC
 
         async Task invokeAsync(MethodInfo method, TObj obj, object[] args)
         {
-            object returnVal = method.Invoke(obj, args);
+            var returnVal = method.Invoke(obj, args);
 
             //bool isTask = returnVal != null && returnVal is Task;
-            bool isAsync = method.GetCustomAttribute<AsyncStateMachineAttribute>() != null;
+            var isAsync = method.GetCustomAttribute<AsyncStateMachineAttribute>() != null;
 
             //async method support
             if (isAsync)
@@ -222,10 +222,10 @@ namespace WebSocketRPC
 
         async Task<object> invokeWithResultAsync(MethodInfo method, TObj obj, object[] args)
         {
-            object returnVal = method.Invoke(obj, args);
+            var returnVal = method.Invoke(obj, args);
 
-            bool isAsync = method.GetCustomAttribute<AsyncStateMachineAttribute>() != null;
-            bool isTask = returnVal is Task;
+            var isAsync = method.GetCustomAttribute<AsyncStateMachineAttribute>() != null;
+            var isTask = returnVal is Task;
 
             //async method support
             if (isAsync || isTask)

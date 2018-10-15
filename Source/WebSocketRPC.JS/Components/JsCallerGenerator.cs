@@ -81,7 +81,7 @@ namespace WebSocketRPC
             };
 
             var sb = new StringBuilder();
-            sb.Append(String.Join(Environment.NewLine, t));
+            sb.Append(string.Join(Environment.NewLine, t));
             sb.Append(Environment.NewLine);
             sb.Append(Environment.NewLine);
 
@@ -96,7 +96,7 @@ namespace WebSocketRPC
             };
 
             var sb = new StringBuilder();
-            sb.Append(String.Join(Environment.NewLine, t));
+            sb.Append(string.Join(Environment.NewLine, t));
             sb.Append(Environment.NewLine);
 
             //API base
@@ -104,8 +104,8 @@ namespace WebSocketRPC
             var resourceName = assembly.GetManifestResourceNames().First(x => x.Contains("ClientAPIBase.js"));
 
             var lines = new List<string>();
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (var reader = new StreamReader(stream))
             {
                 string l = null;
                 while ((l = reader.ReadLine()) != null)
@@ -114,7 +114,7 @@ namespace WebSocketRPC
                 }
             }
 
-            var apiBase = String.Join(Environment.NewLine, lines.Select(x => "\t" + x));
+            var apiBase = string.Join(Environment.NewLine, lines.Select(x => "\t" + x));
             sb.Append(apiBase);
             sb.Append(Environment.NewLine);
 
@@ -123,8 +123,8 @@ namespace WebSocketRPC
 
         public static string GenerateMethod(string methodName, string[] argNames)
         {
-            var jsMName = Char.ToLower(methodName.First()) + methodName.Substring(1);
-            var argList = String.Join(", ", argNames);
+            var jsMName = char.ToLower(methodName.First()) + methodName.Substring(1);
+            var argList = string.Join(", ", argNames);
 
             var t = new string[] {
                 $"\t this.{jsMName} = function({argList}) {{",
@@ -134,7 +134,7 @@ namespace WebSocketRPC
             };
 
             var sb = new StringBuilder();
-            sb.Append(String.Join(Environment.NewLine, t));
+            sb.Append(string.Join(Environment.NewLine, t));
 
             return sb.ToString();
         }
@@ -146,7 +146,7 @@ namespace WebSocketRPC
             };
 
             var sb = new StringBuilder();
-            sb.Append(String.Join(Environment.NewLine, t));
+            sb.Append(string.Join(Environment.NewLine, t));
 
             return sb.ToString();
         }

@@ -186,7 +186,7 @@ namespace WebSocketRPC
                 var list = members.Select(x => x(msg)).ToList();
                 Task.WaitAll(list.ToArray());
 
-                bool allFaulted = !list.Where(t => !t.IsFaulted).Any();
+                var allFaulted = !list.Where(t => !t.IsFaulted).Any();
                 if (allFaulted)
                 {
                     InvokeOnError(list[0].Exception);
@@ -241,7 +241,7 @@ namespace WebSocketRPC
             if (bData.Length >= MaxMessageSize)
             {
                 //InvokeOnError(new NotSupportedException(String.Format(messageToBig, maxMessageSize)));
-                await CloseAsync(WebSocketCloseStatus.MessageTooBig, String.Format(messageToBig, bData.Length, maxMessageSize));
+                await CloseAsync(WebSocketCloseStatus.MessageTooBig, string.Format(messageToBig, bData.Length, maxMessageSize));
                 return false;
             }
 
@@ -343,7 +343,7 @@ namespace WebSocketRPC
         async Task listenReceiveAsync(CancellationToken token)
         {
             invokeOnOpen();
-            byte[] receiveBuffer = new byte[maxMessageSize];
+            var receiveBuffer = new byte[maxMessageSize];
 
             while (socket.State == WebSocketState.Open)
             {
@@ -359,7 +359,7 @@ namespace WebSocketRPC
                     if (count >= maxMessageSize)
                     {
                         //InvokeOnError(new NotSupportedException(String.Format(messageToBig, maxMessageSize)));
-                        await CloseAsync(WebSocketCloseStatus.MessageTooBig, String.Format(messageToBig, count, maxMessageSize));
+                        await CloseAsync(WebSocketCloseStatus.MessageTooBig, string.Format(messageToBig, count, maxMessageSize));
                         return;
                     }
                 }
@@ -397,14 +397,14 @@ namespace WebSocketRPC
             {
                 await Task.CompletedTask;
                 invokeOnReceive(msg);
-                Request request = Request.FromJson(msg);
+                var request = Request.FromJson(msg);
                 if (request.IsEmpty)
                 {
                     return;
                 }
 
                 var binder = localBinders.Where(b => b.CanProcessRequest(request)).FirstOrDefault();
-                Response response = new Response();
+                var response = new Response();
                 if (binder == null)
                 {
                     response.CallId = request.CallId;
