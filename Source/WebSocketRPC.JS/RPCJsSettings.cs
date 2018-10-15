@@ -54,6 +54,15 @@ namespace WebSocketRPC
         }
 
         /// <summary>
+        /// Gets or sets wherever documentation should be generated
+        /// </summary>
+        public bool Documentation
+        {
+            get;
+            set;
+        } = false;
+
+        /// <summary>
         /// Gets or sets JS module format of the generated files.
         /// </summary>
         public Module Format

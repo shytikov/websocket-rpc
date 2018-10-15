@@ -23,12 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
+using System.Xml;
 
 namespace WebSocketRPC
 {
@@ -49,6 +47,13 @@ namespace WebSocketRPC
             var (tName, mInfos) = JsCallerGenerator.GetMethods(settings.OmittedMethods);
             tName = settings.NameOverwrite ?? tName;
 
+            var xmlMemberNodes = default(XmlNodeList);
+
+            if (settings.Documentation)
+            {
+                xmlMemberNodes = JsDocGenerator.GetMemberNodes(Path.ChangeExtension(typeof(T).Assembly.Location, ".xml"));
+            }
+
             var sb = new StringBuilder();
 
             switch(settings.Format)
@@ -61,6 +66,11 @@ namespace WebSocketRPC
                     break;
             }
 
+            if (settings.Documentation)
+            {
+                sb.Append(JsDocGenerator.GetClassDoc(xmlMemberNodes, tName));
+            }
+
             sb.Append(JsCallerGenerator.GenerateHeader(tName));
 
             foreach (var m in mInfos)
@@ -68,76 +78,17 @@ namespace WebSocketRPC
                 var mName = m.Name;
                 var pNames = m.GetParameters().Select(x => x.Name).ToArray();
 
+                if (settings.Documentation)
+                {
+                    var pTypes = m.GetParameters().Select(x => x.ParameterType).ToArray();
+                    sb.Append(JsDocGenerator.GetMethodDoc(xmlMemberNodes, mName, pNames, pTypes, m.ReturnType));
+                }
+
                 sb.Append(JsCallerGenerator.GenerateMethod(mName, pNames));
             }
 
             sb.Append(JsCallerGenerator.GenerateFooter());
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Generates JavaScript code including JsDoc comments from the provided class or interface type.
-        /// </summary>
-        /// <typeparam name="T">Class or interface type.</typeparam>
-        /// <param name="xmlDocPath">XML assembly definition file.</param>
-        /// <param name="settings">RPC-Js settings used for Javascript code generation.</param>
-        /// <returns>Javascript API.</returns>
-        public static string GenerateCallerWithDoc<T>(string xmlDocPath, RPCJsSettings<T> settings = null)
-        {
-            settings = settings ?? new RPCJsSettings<T>();
-            var (tName, mInfos) = JsCallerGenerator.GetMethods(settings.OmittedMethods);
-            tName = settings.NameOverwrite ?? tName;
-
-            var xmlMemberNodes = JsDocGenerator.GetMemberNodes(xmlDocPath);
-
-            var sb = new StringBuilder();
-
-            switch (settings.Format)
-            {
-                case RPCJsSettings<T>.Module.RequireJS:
-                    sb.Append(JsCallerGenerator.GenerateRequireJsHeader(tName));
-                    break;
-                case RPCJsSettings<T>.Module.CommonJS:
-                    sb.Append(JsCallerGenerator.GenerateCommonJsHeader(tName));
-                    break;
-            }
-
-            sb.Append(JsDocGenerator.GetClassDoc(xmlMemberNodes, tName));
-            sb.Append(JsCallerGenerator.GenerateHeader(tName));
-
-            foreach (var m in mInfos)
-            {
-                var mName = m.Name;
-                var pTypes = m.GetParameters().Select(x => x.ParameterType).ToArray();
-                var pNames = m.GetParameters().Select(x => x.Name).ToArray();
-
-                sb.Append(JsDocGenerator.GetMethodDoc(xmlMemberNodes, mName, pNames, pTypes, m.ReturnType));
-                sb.Append(JsCallerGenerator.GenerateMethod(mName, pNames));
-            }
-
-            sb.Append(JsCallerGenerator.GenerateFooter());
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Generates JavaScript code including JsDoc comments from the provided class or interface type.
-        /// <para>The XML assembly definition is taken form the executing assembly if available.</para>
-        /// </summary>
-        /// <typeparam name="T">Class or interface type.</typeparam>
-        /// <param name="settings">RPC-Js settings used for Javascript code generation.</param>
-        /// <returns>Javascript API.</returns>
-        public static string GenerateCallerWithDoc<T>(RPCJsSettings<T> settings = null)
-        {
-            var xmlDocPath = Path.ChangeExtension(typeof(T).Assembly.Location, ".xml");
-
-            if (!File.Exists(xmlDocPath))
-            {
-                return GenerateCaller(settings);
-            }
-            else
-            {
-                return GenerateCallerWithDoc(xmlDocPath, settings);
-            }
         }
     }
 }
