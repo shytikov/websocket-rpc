@@ -60,7 +60,12 @@ namespace WebSocketRPC
 
             if (overloadedMethodNames.Any())
             {
-                throw new NotSupportedException("Overloaded functions are not supported: " + String.Join(", ", overloadedMethodNames));
+                foreach (var overload in overloadedMethodNames)
+                {
+                    omittedMethodNames.Add(overload);
+                }
+                
+                // throw new NotSupportedException("Overloaded functions are not supported: " + String.Join(", ", overloadedMethodNames));
             }
 
             methodList = methodList.Where(x => !omittedMethodNames.Contains(x.Name))
