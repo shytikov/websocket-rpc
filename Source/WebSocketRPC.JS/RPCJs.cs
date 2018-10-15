@@ -51,7 +51,16 @@ namespace WebSocketRPC
 
             if (settings.Documentation)
             {
-                xmlMemberNodes = JsDocGenerator.GetMemberNodes(Path.ChangeExtension(typeof(T).Assembly.Location, ".xml"));
+                var xmlDocPath = Path.ChangeExtension(typeof(T).Assembly.Location, ".xml");
+
+                if (!File.Exists(xmlDocPath))
+                {
+                    settings.Documentation = false;
+                }
+                else
+                {
+                    xmlMemberNodes = JsDocGenerator.GetMemberNodes(xmlDocPath);
+                }
             }
 
             var sb = new StringBuilder();
