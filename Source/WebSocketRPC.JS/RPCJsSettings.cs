@@ -56,7 +56,11 @@ namespace WebSocketRPC
         /// <summary>
         /// If true the 'require.js' header will be present in the generated files.
         /// </summary>
-        public bool WithRequireSupport { get; set; }
+        public Module Format
+        {
+            get;
+            set;
+        } = Module.None;
 
         string nameOverwrite = null;
         /// <summary>
@@ -78,6 +82,13 @@ namespace WebSocketRPC
 
                 nameOverwrite = value;
             }
+        }
+
+        public enum Module
+        {
+            None,
+            RequireJS,
+            CommonJS
         }
     }
 }
