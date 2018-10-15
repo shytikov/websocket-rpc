@@ -46,8 +46,9 @@ function onCallRequest(data, onError) {
 function getAllFunctions(obj) {
     var funcs = {};
     for (var f in obj) {
-        if (typeof obj[f] === 'function')
+        if (typeof obj[f] === 'function') {
             funcs[f] = obj[f];
+        }
     }
 
     return funcs;
