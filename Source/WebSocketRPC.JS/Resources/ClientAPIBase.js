@@ -2,17 +2,14 @@
 
 //-----outgoing RPCs
 var registeredFunctions = [];
-function callRPC(funcName, funcArgVals)
-{
+function callRPC(funcName, funcArgVals) {
     if (ws === null) return;
 
-    if (!!registeredFunctions[funcName] === false)
-    {
+    if (!!registeredFunctions[funcName] === false) {
         registeredFunctions[funcName] = { FunctionName: funcName, OnReturn: null, OnError: null /*used by Promise*/ };
     }
 
-    var promise = new Promise((resolve, reject) =>
-    {
+    var promise = new Promise((resolve, reject) => {
         registeredFunctions[funcName].OnReturn = resolve;
         registeredFunctions[funcName].OnError = reject;
     });
@@ -21,21 +18,19 @@ function callRPC(funcName, funcArgVals)
     return promise;
 }
 
-function onRPCResponse(data)
-{
-    if (!!data.Error && data.Error)
+function onRPCResponse(data) {
+    if (!!data.Error && data.Error) {
         registeredFunctions[data.FunctionName].OnError(data.Error);
-    else
+    } else {
         registeredFunctions[data.FunctionName].OnReturn(data.ReturnValue);
+    }
 }
 
 //-----incoming RPCs
-function onCallRequest(data, onError)
-{
+function onCallRequest(data, onError) {
     var jsonFName = data.FunctionName[0].toLowerCase() + data.FunctionName.substring(1);
     var isFunc = typeof obj[jsonFName] === 'function';
-    if (!isFunc)
-    {
+    if (!isFunc) {
         onError({ title: "METHOD_NOT_IMPLEMENTED", summary: "The requested method is not implemented: " + jsonFName + "." });
         return;
     }
@@ -48,11 +43,9 @@ function onCallRequest(data, onError)
     ws.send(JSON.stringify({ FunctionName: data.FunctionName, CallId: data.CallId, ReturnValue: r, Error: errMsg })); //TODO: error ?
 }
 
-function getAllFunctions(obj)
-{
+function getAllFunctions(obj) {
     var funcs = {};
-    for (var f in obj)
-    {
+    for (var f in obj) {
         if (typeof obj[f] === 'function')
             funcs[f] = obj[f];
     }
@@ -61,20 +54,20 @@ function getAllFunctions(obj)
 }
 
 //-----common
-function onMessage(msg, onError)
-{
+function onMessage(msg, onError) {
     var data = null;
     try { data = JSON.parse(msg.data); } catch (e) { }
 
     var isRPCResponse = (data !== null) && !!registeredFunctions[data.FunctionName] && (data.ReturnValue !== undefined || !!data.Error);
     var isCallRequest = (data !== null) && !!data.Arguments;
 
-    if (isRPCResponse)
+    if (isRPCResponse) {
         onRPCResponse(data);
-    else if (isCallRequest)
+    } else if (isCallRequest) {
         onCallRequest(data, onError);
-    else if (obj.onOtherMessage)
+    } else if (obj.onOtherMessage) {
         obj.onOtherMessage(msg.data);
+    }
 }
 
 
@@ -87,24 +80,25 @@ function onMessage(msg, onError)
 * @param  {func} {Callback called when connection is closed.      Args: <id, title, summary>.}
 * @return {void} {}    
 */
-this.connect = function (onOpen, onError, onClose)
-{
-    if (!!onOpen === false || typeof onOpen !== 'function')
+this.connect = function (onOpen, onError, onClose) {
+    if (!!onOpen === false || typeof onOpen !== 'function') {
         throw 'onOpen function callback is missing.';
+    }
 
-    if (!!onError === false || typeof onError !== 'function')
+    if (!!onError === false || typeof onError !== 'function') {
         throw 'onError function callback is missing.';
+    }
 
-    if (!!onClose === false || typeof onClose !== 'function')
+    if (!!onClose === false || typeof onClose !== 'function') {
         throw 'onClose function callback is missing.';
+    }
 
-
-    if (!!window.WebSocket === false)
+    if (!!window.WebSocket === false) {
         onError({ id: -1, title: "SOCKET_NOSUPPORT", summary: "This browser does not support Web sockets." });
+    }
 
     //reset
-    if (ws)
-    {
+    if (ws) {
         ws.close();
         ws = null;
     }
@@ -114,18 +108,15 @@ this.connect = function (onOpen, onError, onClose)
     ws.onopen = onOpen;
     ws.onmessage = msg => onMessage(msg, onError);
 
-    ws.onerror = function (err)
-    {
+    ws.onerror = function (err) {
         if (ws.readyState === 1)
             onError({ id: -1, title: "SOCKET_ERR", summary: err }); //if normal error (connection error is handled in onclose)
     };
 
-    ws.onclose = function (evt)
-    {
-        switch (evt.code)
-        {
+    ws.onclose = function (evt) {
+        switch (evt.code) {
             case 1000:
-                onClose({ id: evt.code, closeReason: evt.reason || "normal",  summary: "Websocket connection was closed." });
+                onClose({ id: evt.code, closeReason: evt.reason || "normal", summary: "Websocket connection was closed." });
                 break;
             case 1006:
                 onClose({ id: evt.code, closeReason: evt.reason || "abnormal", summary: "Websocket connection was closed abnormally." });
@@ -134,7 +125,7 @@ this.connect = function (onOpen, onError, onClose)
                 onClose({ id: evt.code, closeReason: evt.reason || "policy violation", summary: "Websocket connection was closed due to policy violation." });
                 break;
             case 1009:
-                onClose({ id: evt.code, closeReason: evt.reason ||"message too big", summary: "Websocket connection was closed due to too large message." });
+                onClose({ id: evt.code, closeReason: evt.reason || "message too big", summary: "Websocket connection was closed due to too large message." });
                 break;
             case 3001:
                 break; //nothing
@@ -166,8 +157,7 @@ this.send = function (message) { ws.send(message); }
  * @param {number} - Status code (see https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes for details).
  * @param {string} - Human readable close reason (the max length is 123 bytes / ASCII characters).
 */
-this.close = function (code, closeReason)
-{
+this.close = function (code, closeReason) {
     code = (code === undefined) ? 1000 : code;
     closeReason = closeReason || "";
 
