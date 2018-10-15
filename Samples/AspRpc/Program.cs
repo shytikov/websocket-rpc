@@ -51,7 +51,7 @@ namespace AspRpc
         public static void Main(string[] args)
         {
             //generate js code
-            File.WriteAllText($"./Site/{nameof(ReportingService)}.js", RPCJs.GenerateCallerWithDoc<ReportingService>());
+            File.WriteAllText($"./Site/{nameof(ReportingService)}.js", RPCJs.GenerateCaller<ReportingService>());
 
             WebHost.CreateDefaultBuilder(args)
                    .UseStartup<Startup>()

@@ -48,8 +48,8 @@ namespace MultiService
         static void Main(string[] args)
         {
             //generate js code
-            File.WriteAllText($"./Site/{nameof(NumericService)}.js", RPCJs.GenerateCallerWithDoc<NumericService>());
-            File.WriteAllText($"./Site/{nameof(TextService)}.js", RPCJs.GenerateCallerWithDoc<TextService>());
+            File.WriteAllText($"./Site/{nameof(NumericService)}.js", RPCJs.GenerateCaller<NumericService>());
+            File.WriteAllText($"./Site/{nameof(TextService)}.js", RPCJs.GenerateCaller<TextService>());
 
             //start server and bind its local and remote APIs
             var cts = new CancellationTokenSource();

@@ -50,7 +50,7 @@ namespace ClientJs
         static void Main(string[] args)
         {
             //generate js code
-            File.WriteAllText($"./Site/{nameof(TaskAPI)}.js", RPCJs.GenerateCallerWithDoc<TaskAPI>());
+            File.WriteAllText($"./Site/{nameof(TaskAPI)}.js", RPCJs.GenerateCaller<TaskAPI>());
           
             //start server and bind its local and remote API
             var cts = new CancellationTokenSource();
