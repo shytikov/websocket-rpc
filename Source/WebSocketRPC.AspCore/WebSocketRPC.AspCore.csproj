@@ -32,12 +32,13 @@
     <PackageTags>websocket; ASP.NET; RPC; C#; .NET</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 
-    <Version>1.0.6</Version>
+    <Version>1.3.1</Version>
     <PackageOutputPath>../../Deploy/Nuget/bin/</PackageOutputPath>
-    <RootNamespace>WebSocketRPC</RootNamespace>
 
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
+    <PackageId>Toolchain.WebsocketRPC.AspCore</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
 </Project>
